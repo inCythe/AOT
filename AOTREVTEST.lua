@@ -26,25 +26,17 @@ local function ExpandAndHighlightNape(napeObject)
         napeObject.CanCollide = false
         napeObject.Anchored = false
 
-        local billboardGui = napeObject:FindFirstChild("BillboardGui")
-        if not billboardGui then
-            billboardGui = Instance.new("BillboardGui")
-            billboardGui.Name = "BillboardGui"
-            billboardGui.AlwaysOnTop = true
-            billboardGui.Size = UDim2.new(2, 0, 2, 0)
-            billboardGui.StudsOffset = Vector3.new(0, 3, 0)
-            billboardGui.MaxDistance = math.huge
-            billboardGui.Adornee = napeObject
-            billboardGui.Parent = napeObject
-
-            local espText = Instance.new("TextLabel")
+        local espText = napeObject:FindFirstChild("ESPText")
+        if not espText then
+            espText = Instance.new("TextLabel")
+            espText.Name = "ESPText"
             espText.Text = "Titan"
             espText.Size = UDim2.new(1, 0, 1, 0)
             espText.TextColor3 = HighlightColor
             espText.Font = Enum.Font.SourceSansBold
             espText.TextSize = 20
             espText.BackgroundTransparency = 0.5
-            espText.Parent = billboardGui
+            espText.Parent = napeObject
         end
     end
 end
@@ -89,5 +81,5 @@ while true do
     if titansBasePart then
         ExpandAndHighlightNapesInTitans(titansBasePart)
     end
-    wait(3)
+    wait()
 end
