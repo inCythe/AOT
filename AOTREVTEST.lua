@@ -23,7 +23,7 @@ local function GetTitans()
     return titans
 end
 
-local function TweenToPosition(targetPosition, targetOrientation)
+local function TweenToPosition(targetPosition)
     local character = Player.Character
     if not character or not character:FindFirstChild("HumanoidRootPart") then return end
 
@@ -45,7 +45,6 @@ local function TweenToPosition(targetPosition, targetOrientation)
 
     local goal = {}
     goal.Position = targetPosition
-    goal.Orientation = targetOrientation
     
     local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
     tween:Play()
@@ -169,7 +168,6 @@ while true do
     end
 
     local playerPosition = Player.Character.HumanoidRootPart.Position
-    local playerOrientation = Player.Character.HumanoidRootPart.Orientation
     local closestDistance = math.huge
     closestTitan = nil
 
@@ -184,7 +182,7 @@ while true do
 
     if closestTitan and closestTitan.Head then
         local targetPosition = GetBackOfHeadPosition(closestTitan.Head)
-        TweenToPosition(targetPosition, playerOrientation)
+        TweenToPosition(targetPosition)
         AttackTitan()
     end
 
