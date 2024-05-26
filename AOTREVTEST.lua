@@ -97,15 +97,15 @@ end
 
 setupRedirector()
 
-task.spawn(function()
+coroutine.wrap(function()
     while true do
         local titansBasePart = workspace:FindFirstChild("Titans")
         if titansBasePart then
             expandAndHighlightNapesInTitans(titansBasePart)
         end
-        wait(3)
+        wait()
     end
-end)
+end)()
 
 local function GetTitans()
     local titans = {}
