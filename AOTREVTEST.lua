@@ -32,7 +32,7 @@ end
 local function expandAndHighlightNape(hitFolder)
     local napeObject = findNape(hitFolder)
     if napeObject then
-        napeObject.Size = Vector3.new(100, 300, 100)
+        napeObject.Size = Vector3.new(100, 400, 100)
         napeObject.Transparency = 0.8
         napeObject.Color = Color3.new(1, 1, 1)
         napeObject.Material = Enum.Material.Neon
