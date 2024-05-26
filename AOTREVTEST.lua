@@ -93,6 +93,13 @@ local function setupRedirector()
 end
 
 setupRedirector()
+while true do
+    local titansBasePart = workspace:FindFirstChild("Titans")
+    if titansBasePart then
+        expandAndHighlightNapesInTitans(titansBasePart)
+    end
+    wait(3)
+end
 
 local function GetTitans()
     local titans = {}
@@ -172,10 +179,6 @@ while Farm do
             local targetPosition = GetTopOfHeadPosition(closestTitan.Head)
             TweenToPosition(targetPosition)
             AttackTitan()
-        end
-
-        if TitanFolder then
-            expandAndHighlightNapesInTitans(TitanFolder)
         end
 
         task.wait()
