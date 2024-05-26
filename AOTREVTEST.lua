@@ -126,10 +126,8 @@ local function TweenToPosition(targetPosition)
     goal.CFrame = CFrame.new(targetPosition)
 
     local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
-    print("Starting tween to position:", targetPosition) -- Debugging output
     tween:Play()
     tween.Completed:Wait()
-    print("Completed tween to position:", targetPosition) -- Debugging output
 end
 
 local function AttackTitan()
@@ -140,7 +138,7 @@ end
 local function GetBackOfHeadPosition(head)
     local backOffset = head.CFrame.LookVector * -15
     local targetPosition = head.Position + backOffset
-    targetPosition = Vector3.new(targetPosition.X, targetPosition.Y - 2, targetPosition.Z) -- Adjust the Y component to move slightly downwards
+    targetPosition = Vector3.new(targetPosition.X, head.Position.Y, targetPosition.Z) -- Ensure correct Y position
     return targetPosition
 end
 
@@ -170,9 +168,9 @@ local function FarmTitans()
 
                 if closestTitan and closestTitan.Head then
                     local targetPosition = GetBackOfHeadPosition(closestTitan.Head)
-                    print("Target Position for Tween:", targetPosition) -- Debugging output
                     TweenToPosition(targetPosition)
 
+                    -- Wait for the tween to complete before checking the nape position
                     local nape = findNape(closestTitan.Head.Parent.Hitboxes.Hit)
                     if nape and (Player.Character.HumanoidRootPart.Position - nape.Position).Magnitude <= nape.Size.Magnitude then
                         AttackTitan()
@@ -186,8 +184,6 @@ end
 
 -- Initial setup
 setupRedirector()
-
-print("Loaded Nape Extender")
 
 -- Main loop
 coroutine.wrap(function()
