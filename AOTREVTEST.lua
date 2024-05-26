@@ -46,7 +46,7 @@ local function TweenToPosition(targetPosition)
 
     local goal = {}
     goal.Position = targetPosition
-
+    
     local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
     tween:Play()
     tween.Completed:Wait()
@@ -135,25 +135,28 @@ local function RedirectHitToNape(hitPart)
     end
 end
 
-for _, part in ipairs(workspace:GetDescendants()) do
-    if part:IsA("BasePart") then
-        part.Touched:Connect(RedirectHitToNape)
+local function Noclip()
+    local character = Player.Character
+    if not character then return end
+
+    for _, child in ipairs(character:GetChildren()) do
+        if child:IsA("BasePart") then
+            child.CanCollide = false
+        end
     end
 end
 
--- Destroy atmosphere
-if game.Lighting:FindFirstChild("Atmosphere") then
-    game.Lighting.Atmosphere:Destroy()
+local function SetupRedirector()
+    for _, part in ipairs(workspace:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.Touched:Connect(RedirectHitToNape)
+        end
+    end
 end
 
 print("Loaded Nape Extender")
 
--- Setup redirector
-for _, part in ipairs(workspace:GetDescendants()) do
-    if part:IsA("BasePart") then
-        part.Touched:Connect(RedirectHitToNape)
-    end
-end
+SetupRedirector()
 
 while true do
     local titansBasePart = workspace:FindFirstChild("Titans")
