@@ -139,17 +139,6 @@ local function RedirectHitToNape(hitPart)
     end
 end
 
-local function Noclip()
-    local character = Player.Character
-    if not character then return end
-
-    for _, child in ipairs(character:GetChildren()) do
-        if child:IsA("BasePart") then
-            child.CanCollide = false
-        end
-    end
-end
-
 local function SetupRedirector()
     for _, part in ipairs(workspace:GetDescendants()) do
         if part:IsA("BasePart") then
