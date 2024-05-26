@@ -25,31 +25,33 @@ local function GetTitans()
 end
 
 local function TweenToPosition(targetPosition)
-    local character = Player.Character
-    if not character or not character:FindFirstChild("HumanoidRootPart") then return end
+    coroutine.wrap(function()
+        local character = Player.Character
+        if not character or not character:FindFirstChild("HumanoidRootPart") then return end
 
-    local humanoidRootPart = character.HumanoidRootPart
+        local humanoidRootPart = character.HumanoidRootPart
 
-    local currentPos = humanoidRootPart.Position
-    local distance = (targetPosition - currentPos).Magnitude
-    local walkSpeed = Player.Character:FindFirstChildOfClass("Humanoid").WalkSpeed
-    local duration = distance / walkSpeed -- Adjusting duration based on distance and walk speed
+        local currentPos = humanoidRootPart.Position
+        local distance = (targetPosition - currentPos).Magnitude
+        local walkSpeed = Player.Character:FindFirstChildOfClass("Humanoid").WalkSpeed
+        local duration = distance / walkSpeed -- Adjusting duration based on distance and walk speed
 
-    local tweenInfo = TweenInfo.new(
-        duration, -- Time to complete the tween
-        Enum.EasingStyle.Linear,
-        Enum.EasingDirection.Out,
-        0, -- Number of times to repeat (0 means no repeat)
-        false, -- Should the tween repeat?
-        0 -- Delay before starting the tween
-    )
+        local tweenInfo = TweenInfo.new(
+            duration, -- Time to complete the tween
+            Enum.EasingStyle.Linear,
+            Enum.EasingDirection.Out,
+            0, -- Number of times to repeat (0 means no repeat)
+            false, -- Should the tween repeat?
+            0 -- Delay before starting the tween
+        )
 
-    local goal = {}
-    goal.Position = targetPosition
-    
-    local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
-    tween:Play()
-    tween.Completed:Wait()
+        local goal = {}
+        goal.Position = targetPosition
+        
+        local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
+        tween:Play()
+        tween.Completed:Wait()
+    end)()
 end
 
 local function AttackTitan()
