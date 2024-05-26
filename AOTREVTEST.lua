@@ -5,7 +5,6 @@ until game:IsLoaded()
 local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
 local VIM = game:GetService("VirtualInputManager")
-local TweenService = game:GetService("TweenService")
 local TitanFolder = game:GetService("Workspace"):FindFirstChild("Titans")
 
 local closestTitan = nil
@@ -123,29 +122,12 @@ local function GetTitans()
     return titans
 end
 
-local function TweenToPosition(targetPosition)
+local function TeleportToPosition(targetPosition)
     local character = Player.Character
     if not character or not character:FindFirstChild("HumanoidRootPart") then return end
 
     local humanoidRootPart = character.HumanoidRootPart
-
-    local duration = 1
-
-    local tweenInfo = TweenInfo.new(
-        duration, -- Time to complete the tween
-        Enum.EasingStyle.Linear,
-        Enum.EasingDirection.Out,
-        0, -- Number of times to repeat (0 means no repeat)
-        false, -- Should the tween reverse?
-        0 -- Delay before starting the tween
-    )
-
-    local goal = {}
-    goal.CFrame = CFrame.new(targetPosition)
-
-    local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
-    tween:Play()
-    tween.Completed:Wait()
+    humanoidRootPart.CFrame = CFrame.new(targetPosition)
 end
 
 local function AttackTitan()
@@ -155,16 +137,16 @@ end
 
 local function GetTopOfHeadPosition(head)
     local headHeight = head.Size.Y / 2
-    local targetPosition = head.Position + Vector3.new(0, headHeight + 10, 0) -- 5 units above the top of the head
+    local targetPosition = head.Position + Vector3.new(0, headHeight + 10, 0) -- 10 units above the top of the head
     return targetPosition
 end
 
 local function Parry()
-  for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.Interface.Buttons:GetChildren()) do
-    if v ~= nil then
-      VIM:SendKeyEvent(true,string.sub(tostring(v), 1, 1),false,game)
+    for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.Interface.Buttons:GetChildren()) do
+        if v ~= nil then
+            VIM:SendKeyEvent(true,string.sub(tostring(v), 1, 1),false,game)
+        end
     end
-  end
 end
 
 while Farm do
@@ -178,7 +160,7 @@ while Farm do
 
         local playerPosition = Player.Character.HumanoidRootPart.Position
         local closestDistance = math.huge
-            closestTitan = nil
+        closestTitan = nil
 
         for _, titan in ipairs(titansList) do
             local headPosition = titan.Head.Position
@@ -191,7 +173,7 @@ while Farm do
 
         if closestTitan and closestTitan.Head then
             local targetPosition = GetTopOfHeadPosition(closestTitan.Head)
-            TweenToPosition(targetPosition)
+            TeleportToPosition(targetPosition)
             AttackTitan()
             Parry()
         end
