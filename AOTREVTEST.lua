@@ -55,8 +55,10 @@ local function TweenToPosition(targetPosition)
 end
 
 local function AttackTitan()
-    VIM:SendMouseButtonEvent(0, 0, 0, true, game, 0)
-    VIM:SendMouseButtonEvent(0, 0, 0, false, game, 0)
+    coroutine.wrap(function()
+        VIM:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+        VIM:SendMouseButtonEvent(0, 0, 0, false, game, 0)
+    end)()
 end
 
 local function GetBackOfHeadPosition(head)
