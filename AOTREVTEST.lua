@@ -155,7 +155,7 @@ end
 
 local function GetTopOfHeadPosition(head)
     local headHeight = head.Size.Y / 2
-    local targetPosition = head.Position + Vector3.new(0, headHeight + 20, 0) -- 5 units above the top of the head
+    local targetPosition = head.Position + Vector3.new(0, headHeight + 10, 0) -- 5 units above the top of the head
     return targetPosition
 end
 
