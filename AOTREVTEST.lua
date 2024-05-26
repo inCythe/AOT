@@ -94,7 +94,7 @@ end
 
 setupRedirector()
 while true do
-    local titansBasePart = workspace:FindFirstChild("Titans")
+    local titansBasePart = game:GetService("Workspace"):FindFirstChild("Titans")
     if titansBasePart then
         expandAndHighlightNapesInTitans(titansBasePart)
     end
