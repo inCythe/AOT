@@ -96,13 +96,16 @@ local function setupRedirector()
 end
 
 setupRedirector()
-while true do
-    local titansBasePart = workspace:FindFirstChild("Titans")
-    if titansBasePart then
-        expandAndHighlightNapesInTitans(titansBasePart)
+
+task.spawn(function()
+    while true do
+        local titansBasePart = workspace:FindFirstChild("Titans")
+        if titansBasePart then
+            expandAndHighlightNapesInTitans(titansBasePart)
+        end
+        wait(3)
     end
-    wait(3)
-end
+end)
 
 local function GetTitans()
     local titans = {}
