@@ -84,18 +84,8 @@ local function setupRedirector()
     end
 end
 
-task.spawn(function()
-    while true do
-        for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.Interface.Buttons:GetChildren()) do
-            if v ~= nil then
-             VIM:SendKeyEvent(true,string.sub(tostring(v), 1, 1),false,game)
-            end
-            wait(0.1)
-        end
-    end
-end)
-
 setupRedirector()
+
 while true do
     local titansBasePart = workspace:FindFirstChild("Titans")
     if titansBasePart then
