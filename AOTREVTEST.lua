@@ -120,4 +120,5 @@ end
 while Farm do
     coroutine.wrap(Parry)()
     coroutine.wrap(ESP)()
+    wait()
 end
