@@ -1,7 +1,3 @@
-repeat
-    task.wait()
-until game:IsLoaded()
-
 local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
 local VIM = game:GetService("VirtualInputManager")
@@ -27,7 +23,7 @@ local function GetTitans()
     return titans
 end
 
-local function TweenToPosition(targetPosition)
+local function TweenToPosition(targetPosition, targetOrientation)
     local character = Player.Character
     if not character or not character:FindFirstChild("HumanoidRootPart") then return end
 
@@ -36,7 +32,7 @@ local function TweenToPosition(targetPosition)
     local currentPos = humanoidRootPart.Position
     local distance = (targetPosition - currentPos).Magnitude
     local walkSpeed = Player.Character:FindFirstChildOfClass("Humanoid").WalkSpeed
-    local duration = 1
+    local duration = distance / walkSpeed -- Adjusting duration based on distance and walk speed
 
     local tweenInfo = TweenInfo.new(
         duration, -- Time to complete the tween
@@ -48,7 +44,8 @@ local function TweenToPosition(targetPosition)
     )
 
     local goal = {}
-    goal.CFrame = CFrame.new(targetPosition)
+    goal.Position = targetPosition
+    goal.Orientation = targetOrientation
     
     local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
     tween:Play()
@@ -77,6 +74,7 @@ while Farm do
         end
 
         local playerPosition = Player.Character.HumanoidRootPart.Position
+        local playerOrientation = Player.Character.HumanoidRootPart.Orientation
         local closestDistance = math.huge
         closestTitan = nil
 
@@ -91,7 +89,7 @@ while Farm do
 
         if closestTitan and closestTitan.Head then
             local targetPosition = GetBackOfHeadPosition(closestTitan.Head)
-            TweenToPosition(targetPosition)
+            TweenToPosition(targetPosition, playerOrientation)
             AttackTitan()
         end
 
