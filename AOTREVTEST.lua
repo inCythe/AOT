@@ -5,14 +5,11 @@ until game:IsLoaded()
 local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
 local VIM = game:GetService("VirtualInputManager")
-local TweenService = game:GetService("TweenService")
 local TitanFolder = game:GetService("Workspace"):FindFirstChild("Titans")
 
-local closestTitan = nil
 local Farm = true
 
 local workspace = game:GetService("Workspace")
-local players = game:GetService("Players")
 
 game.Lighting.Atmosphere:Destroy()
 
@@ -97,105 +94,29 @@ end
 
 setupRedirector()
 
-coroutine.wrap(function()
-    while true do
-        local titansBasePart = workspace:FindFirstChild("Titans")
-        if titansBasePart then
-            expandAndHighlightNapesInTitans(titansBasePart)
+local function ESP()
+    coroutine.wrap(function()
+        while true do
+            local titansBasePart = workspace:FindFirstChild("Titans")
+            if titansBasePart then
+                expandAndHighlightNapesInTitans(titansBasePart)
+            end
+            wait()
         end
-        wait()
-    end
-end)()
-
-local function GetTitans()
-    local titans = {}
-    for _, titan in pairs(TitanFolder:GetChildren()) do
-        local humanoid = titan:FindFirstChildOfClass("Humanoid")
-        local head = titan:FindFirstChild("Head")
-        if humanoid and head and head.Position then
-            table.insert(titans, {
-                Name = titan.Name,
-                Head = head,
-                Humanoid = humanoid
-            })
-        end
-    end
-    return titans
-end
-
-local function TweenToPosition(targetPosition)
-    local character = Player.Character
-    if not character or not character:FindFirstChild("HumanoidRootPart") then return end
-
-    local humanoidRootPart = character.HumanoidRootPart
-
-    local duration = 1
-
-    local tweenInfo = TweenInfo.new(
-        duration, -- Time to complete the tween
-        Enum.EasingStyle.Linear,
-        Enum.EasingDirection.Out,
-        0, -- Number of times to repeat (0 means no repeat)
-        false, -- Should the tween reverse?
-        0 -- Delay before starting the tween
-    )
-
-    local goal = {}
-    goal.CFrame = CFrame.new(targetPosition)
-
-    local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
-    tween:Play()
-    tween.Completed:Wait()
-end
-
-local function AttackTitan()
-    VIM:SendMouseButtonEvent(0, 0, 0, true, game, 0)
-    VIM:SendMouseButtonEvent(0, 0, 0, false, game, 0)
-end
-
-local function GetTopOfHeadPosition(head)
-    local headHeight = head.Size.Y / 2
-    local targetPosition = head.Position + Vector3.new(0, headHeight + 20, 0) -- 5 units above the top of the head
-    return targetPosition
+    end)
 end
 
 local function Parry()
-  for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.Interface.Buttons:GetChildren()) do
-    if v ~= nil then
-      VIM:SendKeyEvent(true,string.sub(tostring(v), 1, 1),false,game)
-    end
-  end
+    coroutine.wrap(function()
+        for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.Interface.Buttons:GetChildren()) do
+            if v ~= nil then
+             VIM:SendKeyEvent(true,string.sub(tostring(v), 1, 1),false,game)
+            end
+        end
+    end)
 end
 
 while Farm do
-    pcall(function()
-        local titansList = GetTitans()
-
-        if #titansList == 0 then
-            Farm = false
-            return
-        end
-
-        local playerPosition = Player.Character.HumanoidRootPart.Position
-        local closestDistance = math.huge
-            closestTitan = nil
-
-        for _, titan in ipairs(titansList) do
-            local headPosition = titan.Head.Position
-            local distance = (headPosition - playerPosition).Magnitude
-            if distance < closestDistance then
-                closestDistance = distance
-                closestTitan = titan
-            end
-        end
-
-        if closestTitan and closestTitan.Head then
-            local targetPosition = GetTopOfHeadPosition(closestTitan.Head)
-            TweenToPosition(targetPosition)
-            AttackTitan()
-            Parry()
-        end
-
-        task.wait()
-    end)
+    coroutine.wrap(Parry)()
+    coroutine.wrap(ESP)()
 end
