@@ -46,7 +46,7 @@ local function TweenToPosition(targetPosition)
 
     local goal = {}
     goal.Position = targetPosition
-    
+
     local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
     tween:Play()
     tween.Completed:Wait()
