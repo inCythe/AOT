@@ -11,6 +11,9 @@ local TitanFolder = game:GetService("Workspace"):FindFirstChild("Titans")
 local closestTitan = nil
 local Farm = true
 
+local workspace = game:GetService("Workspace")
+local players = game:GetService("Players")
+
 game.Lighting.Atmosphere:Destroy()
 
 local function findNape(hitFolder)
@@ -85,7 +88,7 @@ local function redirectHitToNape(hitPart)
 end
 
 local function setupRedirector()
-    for _, part in ipairs(game:GetService("Workspace"):GetDescendants()) do
+    for _, part in ipairs(workspace:GetDescendants()) do
         if part:IsA("BasePart") then
             part.Touched:Connect(redirectHitToNape)
         end
@@ -94,7 +97,7 @@ end
 
 setupRedirector()
 while true do
-    local titansBasePart = game:GetService("Workspace"):FindFirstChild("Titans")
+    local titansBasePart = workspace:FindFirstChild("Titans")
     if titansBasePart then
         expandAndHighlightNapesInTitans(titansBasePart)
     end
