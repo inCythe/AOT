@@ -58,7 +58,7 @@ local function AttackTitan()
 end
 
 local function GetBackOfHeadPosition(head)
-    local backOffset = head.CFrame.LookVector * -20
+    local backOffset = head.CFrame.LookVector * -15
     local targetPosition = head.Position + backOffset
     targetPosition = Vector3.new(targetPosition.X, targetPosition.Y - 2, targetPosition.Z) -- Adjust the Y component to move slightly downwards
     return targetPosition
