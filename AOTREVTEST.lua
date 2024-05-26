@@ -6,6 +6,7 @@ local TweenService = game:GetService("TweenService")
 local closestTitan = nil
 local Farm = true
 local TitanFolder = game:GetService("Workspace").Titans
+local initialOrientation = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") and Player.Character.HumanoidRootPart.Orientation or Vector3.new()
 
 local function GetTitans()
     local titans = {}
@@ -159,32 +160,37 @@ while true do
     if titansBasePart then
         ExpandAndHighlightNapesInTitans(titansBasePart)
     end
+    wait(3)
+end
 
-    local titansList = GetTitans()
+while Farm do
+    pcall(function()
+        local titansList = GetTitans()
 
-    if #titansList == 0 then
-        Farm = false
-        break
-    end
-
-    local playerPosition = Player.Character.HumanoidRootPart.Position
-    local closestDistance = math.huge
-    closestTitan = nil
-
-    for _, titan in ipairs(titansList) do
-        local headPosition = titan.Head.Position
-        local distance = (headPosition - playerPosition).Magnitude
-        if distance < closestDistance then
-            closestDistance = distance
-            closestTitan = titan
+        if #titansList == 0 then
+            Farm = false
+            return
         end
-    end
 
-    if closestTitan and closestTitan.Head then
-        local targetPosition = GetBackOfHeadPosition(closestTitan.Head)
-        TweenToPosition(targetPosition)
-        AttackTitan()
-    end
+        local playerPosition = Player.Character.HumanoidRootPart.Position
+        local closestDistance = math.huge
+        closestTitan = nil
 
-    wait()
+        for _, titan in ipairs(titansList) do
+            local headPosition = titan.Head.Position
+            local distance = (headPosition - playerPosition).Magnitude
+            if distance < closestDistance then
+                closestDistance = distance
+                closestTitan = titan
+            end
+        end
+
+        if closestTitan and closestTitan.Head then
+            local targetPosition = GetBackOfHeadPosition(closestTitan.Head)
+            TweenToPosition(targetPosition)
+            AttackTitan()
+        end
+
+        wait()
+    end)
 end
