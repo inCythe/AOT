@@ -101,7 +101,7 @@ local function ESP()
             if titansBasePart then
                 expandAndHighlightNapesInTitans(titansBasePart)
             end
-            wait()
+            wait(3)
         end
     end)
 end
@@ -112,6 +112,7 @@ local function Parry()
             if v ~= nil then
              VIM:SendKeyEvent(true,string.sub(tostring(v), 1, 1),false,game)
             end
+            wait(0.1)
         end
     end)
 end
