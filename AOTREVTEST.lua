@@ -11,8 +11,6 @@ local Farm = true
 
 local workspace = game:GetService("Workspace")
 
-game.Lighting.Atmosphere:Destroy()
-
 local function findNape(hitFolder)
     return hitFolder:FindFirstChild("Nape")
 end
