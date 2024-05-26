@@ -2,14 +2,8 @@ repeat
     task.wait()
 until game:IsLoaded()
 
-local Players = game:GetService("Players")
-local Player = Players.LocalPlayer
-local VIM = game:GetService("VirtualInputManager")
-local TitanFolder = game:GetService("Workspace"):FindFirstChild("Titans")
-
-local Farm = true
-
 local workspace = game:GetService("Workspace")
+local players = game:GetService("Players")
 
 local function findNape(hitFolder)
     return hitFolder:FindFirstChild("Nape")
@@ -27,7 +21,7 @@ end
 local function expandAndHighlightNape(hitFolder)
     local napeObject = findNape(hitFolder)
     if napeObject then
-        napeObject.Size = Vector3.new(100, 400, 100)
+        napeObject.Size = Vector3.new(100, 150, 100)
         napeObject.Transparency = 0.8
         napeObject.Color = Color3.new(1, 1, 1)
         napeObject.Material = Enum.Material.Neon
@@ -90,37 +84,22 @@ local function setupRedirector()
     end
 end
 
-setupRedirector()
-
-local function ESP()
-    coroutine.wrap(function()
-        while true do
-            local titansBasePart = workspace:FindFirstChild("Titans")
-            if titansBasePart then
-                expandAndHighlightNapesInTitans(titansBasePart)
-            end
-            wait(3)
-        end
-    end)
-end
-
-local function Parry()
-    coroutine.wrap(function()
+task.spawn(function()
+    while true do
         for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.Interface.Buttons:GetChildren()) do
             if v ~= nil then
              VIM:SendKeyEvent(true,string.sub(tostring(v), 1, 1),false,game)
             end
             wait(0.1)
         end
-    end)
-end
+    end
+end)
 
-while Farm do
-    pcall(function()
-        Parry()
-    end)
-    pcall(function()
-        ESP()
-    end)
-    wait()
+setupRedirector()
+while true do
+    local titansBasePart = workspace:FindFirstChild("Titans")
+    if titansBasePart then
+        expandAndHighlightNapesInTitans(titansBasePart)
+    end
+    wait(3)
 end
