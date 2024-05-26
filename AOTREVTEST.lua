@@ -93,13 +93,6 @@ local function setupRedirector()
 end
 
 setupRedirector()
-while true do
-    local titansBasePart = game:GetService("Workspace"):FindFirstChild("Titans")
-    if titansBasePart then
-        expandAndHighlightNapesInTitans(titansBasePart)
-    end
-    wait(3)
-end
 
 local function GetTitans()
     local titans = {}
