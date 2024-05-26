@@ -1,9 +1,7 @@
-repeat
-    task.wait()
-until game:IsLoaded()
-
 local workspace = game:GetService("Workspace")
 local players = game:GetService("Players")
+
+game.Lighting.Atmosphere:Destroy()
 
 local function findNape(hitFolder)
     return hitFolder:FindFirstChild("Nape")
@@ -85,7 +83,6 @@ local function setupRedirector()
 end
 
 setupRedirector()
-
 while true do
     local titansBasePart = workspace:FindFirstChild("Titans")
     if titansBasePart then
