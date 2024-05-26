@@ -12,63 +12,55 @@ local closestTitan = nil
 local Farm = true
 
 local function GetTitans()
-    coroutine.wrap(function()
-        local titans = {}
-        for _, titan in pairs(TitanFolder:GetChildren()) do
-            local humanoid = titan:FindFirstChildOfClass("Humanoid")
-            local head = titan:FindFirstChild("Head")
-            if humanoid and head and head.Position then
-                table.insert(titans, {
-                    Name = titan.Name,
-                    Head = head,
-                    Humanoid = humanoid
-                })
-            end
+    local titans = {}
+    for _, titan in pairs(TitanFolder:GetChildren()) do
+        local humanoid = titan:FindFirstChildOfClass("Humanoid")
+        local head = titan:FindFirstChild("Head")
+        if humanoid and head and head.Position then
+            table.insert(titans, {
+                Name = titan.Name,
+                Head = head,
+                Humanoid = humanoid
+            })
         end
-        return titans
-    end)()
+    end
+    return titans
 end
 
 local function TweenToPosition(targetPosition)
-    coroutine.wrap(function()
-        local character = Player.Character
-        if not character or not character:FindFirstChild("HumanoidRootPart") then return end
+    local character = Player.Character
+    if not character or not character:FindFirstChild("HumanoidRootPart") then return end
 
-        local humanoidRootPart = character.HumanoidRootPart
+    local humanoidRootPart = character.HumanoidRootPart
 
-        local duration = 1
+    local duration = 1
 
-        local tweenInfo = TweenInfo.new(
-            duration, -- Time to complete the tween
-            Enum.EasingStyle.Linear,
-            Enum.EasingDirection.Out,
-            0, -- Number of times to repeat (0 means no repeat)
-            false, -- Should the tween reverse?
-            0 -- Delay before starting the tween
-        )
+    local tweenInfo = TweenInfo.new(
+        duration, -- Time to complete the tween
+        Enum.EasingStyle.Linear,
+        Enum.EasingDirection.Out,
+        0, -- Number of times to repeat (0 means no repeat)
+        false, -- Should the tween reverse?
+        0 -- Delay before starting the tween
+    )
 
-        local goal = {}
-        goal.CFrame = CFrame.new(targetPosition)
+    local goal = {}
+    goal.CFrame = CFrame.new(targetPosition)
 
-        local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
-        tween:Play()
-        tween.Completed:Wait()
-    end)()
+    local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
+    tween:Play()
+    tween.Completed:Wait()
 end
 
 local function AttackTitan()
-    coroutine.wrap(function()
-        VIM:SendMouseButtonEvent(0, 0, 0, true, game, 0)
-        VIM:SendMouseButtonEvent(0, 0, 0, false, game, 0)
-    end)()
+    VIM:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+    VIM:SendMouseButtonEvent(0, 0, 0, false, game, 0)
 end
 
 local function GetTopOfHeadPosition(head)
-    coroutine.wrap(function()
-        local headHeight = head.Size.Y / 2
-        local targetPosition = head.Position + Vector3.new(0, headHeight + 20, 0) -- 5 units above the top of the head
-        return targetPosition
-    end)()
+    local headHeight = head.Size.Y / 2
+    local targetPosition = head.Position + Vector3.new(0, headHeight + 20, 0) -- 5 units above the top of the head
+    return targetPosition
 end
 
 while Farm do
