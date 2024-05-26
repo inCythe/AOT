@@ -116,7 +116,11 @@ local function Parry()
 end
 
 while Farm do
-    coroutine.wrap(Parry)()
-    coroutine.wrap(ESP)()
+    pcall(function()
+        Parry()
+    end)
+    pcall(function()
+        ESP()
+    end)
     wait()
 end
