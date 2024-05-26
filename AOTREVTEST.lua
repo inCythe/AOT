@@ -155,8 +155,16 @@ end
 
 local function GetTopOfHeadPosition(head)
     local headHeight = head.Size.Y / 2
-    local targetPosition = head.Position + Vector3.new(0, headHeight + 10, 0) -- 5 units above the top of the head
+    local targetPosition = head.Position -- 5 units above the top of the head
     return targetPosition
+end
+
+local function Parry()
+  for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.Interface.Buttons:GetChildren()) do
+    if v ~= nil then
+      VIM:SendKeyEvent(true,string.sub(tostring(v), 1, 1),false,game)
+    end
+  end
 end
 
 while Farm do
@@ -185,6 +193,7 @@ while Farm do
             local targetPosition = GetTopOfHeadPosition(closestTitan.Head)
             TweenToPosition(targetPosition)
             AttackTitan()
+            Parry()
         end
 
         task.wait()
