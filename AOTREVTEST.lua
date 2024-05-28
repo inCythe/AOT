@@ -1,4 +1,4 @@
-local Workspace = game:GetService("Workspace")
+local workspace = game:GetService("Workspace")
 local Players = game:GetService("Players")
 local TitansBasePartName = "Titans"
 local DamageAmount = 10
@@ -67,7 +67,7 @@ local function RedirectHitToNape(hitPart)
 end
 
 local function SetupRedirector()
-    for _, part in ipairs(Workspace:GetDescendants()) do
+    for _, part in ipairs(workspace:GetDescendants()) do
         if part:IsA("BasePart") then
             part.Touched:Connect(RedirectHitToNape)
         end
@@ -77,7 +77,7 @@ end
 SetupRedirector()
 
 while true do
-    local titansBasePart = Workspace:FindFirstChild(TitansBasePartName)
+    local titansBasePart = workspace:FindFirstChild(TitansBasePartName)
     if titansBasePart then
         ExpandAndHighlightNapesInTitans(titansBasePart)
     end
