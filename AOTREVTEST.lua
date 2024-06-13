@@ -17,17 +17,6 @@ local DamageAmount = 10
 local HighlightColor = Color3.fromRGB(255, 0, 0)
 local tweenInProgress = false
 
-local function Noclip()
-    local character = Player.Character
-    if not character then return end
-
-    for _, child in ipairs(character:GetChildren()) do
-        if child:IsA("BasePart") then
-            child.CanCollide = not Farm
-        end
-    end
-end
-
 local function Anchored()
     if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
         Player.Character.HumanoidRootPart.Anchored = Farm
@@ -192,7 +181,6 @@ SetUpTouchListener()
 SetupRedirector()
 
 while true do
-    Noclip()
     Anchored()
     Parry()
 
