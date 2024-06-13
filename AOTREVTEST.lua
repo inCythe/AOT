@@ -12,9 +12,12 @@ local closestTitan = nil
 local Farm = true
 
 local workspace = game:GetService("Workspace")
-local players = game:GetService("Players")
 
-game.Lighting.Atmosphere:Destroy()
+local function Anchored()
+    if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
+        Player.Character.HumanoidRootPart.Anchored = Farm
+    end
+end
 
 local function findNape(hitFolder)
     return hitFolder:FindFirstChild("Nape")
@@ -38,27 +41,6 @@ local function expandAndHighlightNape(hitFolder)
         napeObject.Material = Enum.Material.Neon
         napeObject.CanCollide = false
         napeObject.Anchored = false
-
-        local billboardGui = napeObject:FindFirstChild("BillboardGui")
-        if not billboardGui then
-            billboardGui = Instance.new("BillboardGui")
-            billboardGui.Name = "BillboardGui"
-            billboardGui.AlwaysOnTop = true
-            billboardGui.Size = UDim2.new(2, 0, 2, 0)
-            billboardGui.StudsOffset = Vector3.new(0, 3, 0)
-            billboardGui.MaxDistance = math.huge
-            billboardGui.Adornee = napeObject
-            billboardGui.Parent = napeObject
-
-            local espText = Instance.new("TextLabel")
-            espText.Text = "Titan"
-            espText.Size = UDim2.new(1, 0, 1, 0)
-            espText.TextColor3 = Color3.new(255, 0, 0)
-            espText.Font = Enum.Font.SourceSansBold
-            espText.TextSize = 20
-            espText.BackgroundTransparency = 0.5
-            espText.Parent = billboardGui
-        end
     end
 end
 
@@ -132,12 +114,12 @@ local function TweenToPosition(targetPosition)
     local duration = 0
 
     local tweenInfo = TweenInfo.new(
-        duration, -- Time to complete the tween
+        duration,
         Enum.EasingStyle.Linear,
         Enum.EasingDirection.Out,
-        0, -- Number of times to repeat (0 means no repeat)
-        false, -- Should the tween reverse?
-        0 -- Delay before starting the tween
+        0,
+        false,
+        0
     )
 
     local goal = {}
@@ -169,6 +151,9 @@ end
 
 while Farm do
     pcall(function()
+        Anchored()
+        Parry()
+
         local titansList = GetTitans()
 
         if #titansList == 0 then
@@ -193,7 +178,6 @@ while Farm do
             local targetPosition = GetTopOfHeadPosition(closestTitan.Head)
             TweenToPosition(targetPosition)
             AttackTitan()
-            Parry()
         end
 
         task.wait()
