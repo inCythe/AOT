@@ -93,7 +93,7 @@ local function ReleaseAttack()
 end
 
 local function GetAboveHeadPosition(head)
-    local aboveOffset = head.CFrame.LookVector * -15 + Vector3.new(0, 150, 0)
+    local aboveOffset = head.CFrame.LookVector * -15 + Vector3.new(0, 70, 0)
     local targetPosition = head.Position + aboveOffset
     return targetPosition
 end
@@ -217,7 +217,7 @@ while true do
             TweenToPosition(aboveHeadPosition, 0, function()
                 task.wait(2)
                 local targetPosition = closestTitan.Nape.Position
-                TweenToPosition(targetPosition, 0.1, function()
+                TweenToPosition(targetPosition, 0.7, function()
                     AttackTitan()
                     task.wait(0.5)
                 end)
