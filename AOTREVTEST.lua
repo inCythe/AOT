@@ -70,19 +70,23 @@ local function TweenToPosition(targetPosition, duration, callback)
         0
     )
 
-    local goal = {}
-    goal.CFrame = CFrame.new(targetPosition)
+    local goal = {
+        CFrame = CFrame.new(targetPosition)
+    }
     
     local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
     tween:Play()
     tween.Completed:Connect(function()
         tweenInProgress = false
-        if callback then callback() end
+        if callback then
+            callback()
+        end
     end)
 end
 
 local function AttackTitan()
     VIM:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+    task.wait(0.1) -- Adjusted wait time between press and release
     VIM:SendMouseButtonEvent(0, 0, 0, false, game, 0)
 end
 
@@ -147,7 +151,7 @@ while true do
             local aboveHeadPosition = GetAboveHeadPosition(closestTitan.Head)
 
             TweenToPosition(aboveHeadPosition, 0, function()
-                task.wait(2)
+                task.wait(1)
                 local targetPosition = closestTitan.Nape.Position
                 TweenToPosition(targetPosition, 1, function()
                     AttackTitan()
