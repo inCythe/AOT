@@ -13,12 +13,6 @@ local Farm = true
 
 local workspace = game:GetService("Workspace")
 
-local function Anchored()
-    if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
-        Player.Character.HumanoidRootPart.Anchored = Farm
-    end
-end
-
 local function findNape(hitFolder)
     return hitFolder:FindFirstChild("Nape")
 end
