@@ -10,65 +10,13 @@ local VIM = game:GetService("VirtualInputManager")
 local TweenService = game:GetService("TweenService")
 local workspace = game:GetService("Workspace")
 
-print("Script initialized.")
-
--- Function to find the Nape object within a hitFolder
-local function findNape(hitFolder)
-    return hitFolder:FindFirstChild("Nape")
-end
-
--- Function to expand the Nape hitbox
-local function expandNapeHitbox(hitFolder)
-    local napeObject = findNape(hitFolder)
-    if napeObject then
-        napeObject.Size = Vector3.new(105, 120, 100)
-        napeObject.Transparency = 0.96
-        napeObject.Color = Color3.new(1, 1, 1)
-        napeObject.Material = Enum.Material.Neon
-        napeObject.CanCollide = false
-        napeObject.Anchored = false
-        print("Nape hitbox expanded for:", napeObject:GetFullName())
-    else
-        print("Nape object not found in hitFolder:", hitFolder:GetFullName())
-    end
-end
-
--- Function to process all titans in the workspace and expand their Nape hitboxes
-local function processTitans(titansBasePart)
-    for _, titan in ipairs(titansBasePart:GetChildren()) do
-        local hitboxesFolder = titan:FindFirstChild("Hitboxes")
-        if hitboxesFolder then
-            local hitFolder = hitboxesFolder:FindFirstChild("Hit")
-            if hitFolder then
-                expandNapeHitbox(hitFolder)
-            else
-                print("Hit folder not found for titan:", titan.Name)
-            end
-        else
-            print("Hitboxes folder not found for titan:", titan.Name)
-        end
-    end
-end
-
--- Locate the Titans folder in the workspace
-local TitanFolder = workspace:FindFirstChild("Titans")
-
--- Check if the Titans folder exists and expand Nape hitboxes if found
-if TitanFolder then
-    processTitans(TitanFolder)
-    print("Nape hitboxes expanded for all titans.")
-else
-    warn("Titans folder not found in workspace.")
-end
-
--- Continue with the main logic of the script
 local Farm = true
+local TitanFolder = workspace.Titans
 local tweenInProgress = false
 
 local function Anchored()
     if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
         Player.Character.HumanoidRootPart.Anchored = Farm
-        print("Anchored set to:", Farm)
     end
 end
 
@@ -76,7 +24,6 @@ local function Parry()
     for i, v in pairs(Player.PlayerGui.Interface.Buttons:GetChildren()) do
         if v ~= nil then
             VIM:SendKeyEvent(true, string.sub(tostring(v), 1, 1), false, game)
-            print("Parry key event sent for button:", tostring(v))
         end
     end
 end
@@ -96,7 +43,6 @@ local function GetTitans()
             })
         end
     end
-    print("Found", #titans, "titans.")
     return titans
 end
 
@@ -106,7 +52,6 @@ local function TweenToPosition(targetPosition, duration, callback)
     end
 
     tweenInProgress = true
-    print("Starting tween to position:", targetPosition)
 
     local character = Player.Character
     if not character or not character:FindFirstChild("HumanoidRootPart") then
@@ -125,31 +70,51 @@ local function TweenToPosition(targetPosition, duration, callback)
         0
     )
 
-    local goal = {
-        CFrame = CFrame.new(targetPosition)
-    }
+    local goal = {}
+    goal.CFrame = CFrame.new(targetPosition)
     
     local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
     tween:Play()
     tween.Completed:Connect(function()
         tweenInProgress = false
-        print("Tween completed to position:", targetPosition)
-        if callback then
-            callback()
-        end
+        if callback then callback() end
     end)
 end
 
 local function AttackTitan()
     VIM:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+    task.wait(0.1) -- Adjusted wait time between press and release
     VIM:SendMouseButtonEvent(0, 0, 0, false, game, 0)
-    print("Attack event sent.")
 end
 
 local function GetAboveHeadPosition(head)
     local aboveOffset = head.CFrame.LookVector * -15 + Vector3.new(0, 100, 0)
     local targetPosition = head.Position + aboveOffset
     return targetPosition
+end
+
+local function expandNapeHitbox(napeObject)
+    if napeObject then
+        napeObject.Size = Vector3.new(105, 120, 100)
+        napeObject.Transparency = 0.96
+        napeObject.Color = Color3.new(1, 1, 1)
+        napeObject.Material = Enum.Material.Neon
+        napeObject.CanCollide = false
+        napeObject.Anchored = false
+    end
+end
+
+local function processTitans(titansBasePart)
+    for _, titan in ipairs(titansBasePart:GetChildren()) do
+        local hitboxesFolder = titan:FindFirstChild("Hitboxes")
+        if hitboxesFolder then
+            local hitFolder = hitboxesFolder:FindFirstChild("Hit")
+            if hitFolder then
+                local napeObject = hitFolder:FindFirstChild("Nape")
+                expandNapeHitbox(napeObject)
+            end
+        end
+    end
 end
 
 while true do
@@ -161,9 +126,10 @@ while true do
 
         if #titansList == 0 then
             Farm = false
-            print("No titans found. Stopping farm.")
             return
         end
+
+        processTitans(TitanFolder)
 
         local playerPosition = Player.Character.HumanoidRootPart.Position
         local closestDistance = math.huge
@@ -180,15 +146,13 @@ while true do
 
         if closestTitan and closestTitan.Head then
             local aboveHeadPosition = GetAboveHeadPosition(closestTitan.Head)
-            print("Moving above head of closest titan:", closestTitan.Name)
 
-            TweenToPosition(aboveHeadPosition, 0.5, function()
-                task.wait(1)
+            TweenToPosition(aboveHeadPosition, 0, function()
+                task.wait(2)
                 local targetPosition = closestTitan.Nape.Position
-                print("Moving to nape of closest titan:", closestTitan.Name)
-                TweenToPosition(targetPosition, 1, function()
+                TweenToPosition(targetPosition, 0.5, function()
                     AttackTitan()
-                    task.wait(0.2)
+                    task.wait(0.1)
                 end)
             end)
         end
