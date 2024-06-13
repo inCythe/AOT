@@ -145,7 +145,6 @@ end
 
 while Farm do
     pcall(function()
-        Anchored()
         Parry()
 
         local titansList = GetTitans()
