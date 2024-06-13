@@ -10,12 +10,10 @@ local VIM = game:GetService("VirtualInputManager")
 local TweenService = game:GetService("TweenService")
 local workspace = game:GetService("Workspace")
 
--- Function to find the Nape object within a hitFolder
 local function findNape(hitFolder)
     return hitFolder:FindFirstChild("Nape")
 end
 
--- Function to expand the Nape hitbox
 local function expandNapeHitbox(hitFolder)
     local napeObject = findNape(hitFolder)
     if napeObject then
@@ -28,7 +26,6 @@ local function expandNapeHitbox(hitFolder)
     end
 end
 
--- Function to process all titans in the workspace and expand their Nape hitboxes
 local function processTitans(titansBasePart)
     for _, titan in ipairs(titansBasePart:GetChildren()) do
         local hitboxesFolder = titan:FindFirstChild("Hitboxes")
@@ -41,10 +38,8 @@ local function processTitans(titansBasePart)
     end
 end
 
--- Locate the Titans folder in the workspace
 local TitanFolder = workspace:FindFirstChild("Titans")
 
--- Check if the Titans folder exists and expand Nape hitboxes if found
 if TitanFolder then
     processTitans(TitanFolder)
     print("Nape hitboxes expanded for all titans.")
@@ -52,7 +47,6 @@ else
     warn("Titans folder not found in workspace.")
 end
 
--- Continue with the main logic of the script
 local Farm = true
 local tweenInProgress = false
 
