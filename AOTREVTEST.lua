@@ -10,8 +10,50 @@ local VIM = game:GetService("VirtualInputManager")
 local TweenService = game:GetService("TweenService")
 local workspace = game:GetService("Workspace")
 
+-- Function to find the Nape object within a hitFolder
+local function findNape(hitFolder)
+    return hitFolder:FindFirstChild("Nape")
+end
+
+-- Function to expand the Nape hitbox
+local function expandNapeHitbox(hitFolder)
+    local napeObject = findNape(hitFolder)
+    if napeObject then
+        napeObject.Size = Vector3.new(105, 120, 100)
+        napeObject.Transparency = 0.96
+        napeObject.Color = Color3.new(1, 1, 1)
+        napeObject.Material = Enum.Material.Neon
+        napeObject.CanCollide = false
+        napeObject.Anchored = false
+    end
+end
+
+-- Function to process all titans in the workspace and expand their Nape hitboxes
+local function processTitans(titansBasePart)
+    for _, titan in ipairs(titansBasePart:GetChildren()) do
+        local hitboxesFolder = titan:FindFirstChild("Hitboxes")
+        if hitboxesFolder then
+            local hitFolder = hitboxesFolder:FindFirstChild("Hit")
+            if hitFolder then
+                expandNapeHitbox(hitFolder)
+            end
+        end
+    end
+end
+
+-- Locate the Titans folder in the workspace
+local TitanFolder = workspace:FindFirstChild("Titans")
+
+-- Check if the Titans folder exists and expand Nape hitboxes if found
+if TitanFolder then
+    processTitans(TitanFolder)
+    print("Nape hitboxes expanded for all titans.")
+else
+    warn("Titans folder not found in workspace.")
+end
+
+-- Continue with the main logic of the script
 local Farm = true
-local TitanFolder = workspace.Titans
 local tweenInProgress = false
 
 local function Anchored()
@@ -33,11 +75,13 @@ local function GetTitans()
     for _, titan in pairs(TitanFolder:GetChildren()) do
         local humanoid = titan:FindFirstChildOfClass("Humanoid")
         local head = titan:FindFirstChild("Head")
+        local nape = titan:FindFirstChild("Hitboxes") and titan.Hitboxes:FindFirstChild("Hit") and titan.Hitboxes.Hit:FindFirstChild("Nape")
         if humanoid and head and nape then
             table.insert(titans, {
                 Name = titan.Name,
                 Head = head,
                 Humanoid = humanoid,
+                Nape = nape
             })
         end
     end
@@ -93,32 +137,9 @@ local function GetAboveHeadPosition(head)
     return targetPosition
 end
 
-local function expandNapeHitbox(napeObject)
-    if napeObject then
-        napeObject.Size = Vector3.new(105, 120, 100)
-        napeObject.Transparency = 0.96
-        napeObject.Color = Color3.new(1, 1, 1)
-        napeObject.Material = Enum.Material.Neon
-        napeObject.CanCollide = false
-        napeObject.Anchored = false
-    end
-end
-
-local function processTitans(titansBasePart)
-    for _, titan in ipairs(titansBasePart:GetChildren()) do
-        local hitboxesFolder = titan:FindFirstChild("Hitboxes")
-        if hitboxesFolder then
-            local hitFolder = hitboxesFolder:FindFirstChild("Hit")
-            if hitFolder then
-                local napeObject = hitFolder:FindFirstChild("Nape")
-                expandNapeHitbox(napeObject)
-            end
-        end
-    end
-end
-
 while true do
     Parry()
+    Anchored()
     
     if Farm then
         local titansList = GetTitans()
@@ -127,8 +148,6 @@ while true do
             Farm = false
             return
         end
-
-        processTitans(TitanFolder)
 
         local playerPosition = Player.Character.HumanoidRootPart.Position
         local closestDistance = math.huge
@@ -146,10 +165,10 @@ while true do
         if closestTitan and closestTitan.Head then
             local aboveHeadPosition = GetAboveHeadPosition(closestTitan.Head)
 
-            TweenToPosition(aboveHeadPosition, 0, function()
+            TweenToPosition(aboveHeadPosition, 0.5, function()
                 task.wait(1)
                 local targetPosition = closestTitan.Nape.Position
-                TweenToPosition(targetPosition, 0.7, function()
+                TweenToPosition(targetPosition, 1, function()
                     AttackTitan()
                     task.wait(0.2)
                 end)
