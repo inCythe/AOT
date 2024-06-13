@@ -207,7 +207,7 @@ task.spawn(function()
             if closestTitan and closestTitan.Head then
                 local aboveHeadPosition = GetAboveHeadPosition(closestTitan.Head)
 
-                TweenToPosition(aboveHeadPosition, 0, function()
+                TweenToPosition(aboveHeadPosition, 0.1, function()
                     task.wait(2)
                     local targetPosition = closestTitan.Nape.Position
                     TweenToPosition(targetPosition, 0.5, function()
