@@ -217,7 +217,7 @@ while true do
             TweenToPosition(aboveHeadPosition, 0, function()
                 task.wait(2)
                 local targetPosition = closestTitan.Nape.Position
-                TweenToPosition(targetPosition, 1, function()
+                TweenToPosition(targetPosition, 0.1, function()
                     AttackTitan()
                     task.wait(0.5)
                 end)
