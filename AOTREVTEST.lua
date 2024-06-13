@@ -88,18 +88,18 @@ local function SetupRedirector()
     end
 end
 
--- Start Nape Extender
 SetupRedirector()
 
-while true do
-    local titansBasePart = workspace:FindFirstChild("Titans")
-    if titansBasePart then
-        ExpandAndHighlightNapesInTitans(titansBasePart)
+task.spawn(function()
+    while true do
+        local titansBasePart = workspace:FindFirstChild("Titans")
+        if titansBasePart then
+            ExpandAndHighlightNapesInTitans(titansBasePart)
+        end
+        wait()
     end
-    wait()
-end
+end)
 
--- Original Script Functions
 local function Anchored()
     if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
         Player.Character.HumanoidRootPart.Anchored = Farm
@@ -168,7 +168,7 @@ end
 
 local function AttackTitan()
     VIM:SendMouseButtonEvent(0, 0, 0, true, game, 0)
-    task.wait(0.1) -- Adjusted wait time between press and release
+    task.wait(0.1)
     VIM:SendMouseButtonEvent(0, 0, 0, false, game, 0)
 end
 
@@ -178,44 +178,46 @@ local function GetAboveHeadPosition(head)
     return targetPosition
 end
 
-while true do
-    Parry()
-    Anchored()
-    
-    if Farm then
-        local titansList = GetTitans()
+task.spawn(function()
+    while true do
+        Parry()
+        Anchored()
+        
+        if Farm then
+            local titansList = GetTitans()
 
-        if #titansList == 0 then
-            Farm = false
-            return
-        end
+            if #titansList == 0 then
+                Farm = false
+                return
+            end
 
-        local playerPosition = Player.Character.HumanoidRootPart.Position
-        local closestDistance = math.huge
-        local closestTitan = nil
+            local playerPosition = Player.Character.HumanoidRootPart.Position
+            local closestDistance = math.huge
+            local closestTitan = nil
 
-        for _, titan in ipairs(titansList) do
-            local headPosition = titan.Head.Position
-            local distance = (headPosition - playerPosition).Magnitude
-            if distance < closestDistance then
-                closestDistance = distance
-                closestTitan = titan
+            for _, titan in ipairs(titansList) do
+                local headPosition = titan.Head.Position
+                local distance = (headPosition - playerPosition).Magnitude
+                if distance < closestDistance then
+                    closestDistance = distance
+                    closestTitan = titan
+                end
+            end
+
+            if closestTitan and closestTitan.Head then
+                local aboveHeadPosition = GetAboveHeadPosition(closestTitan.Head)
+
+                TweenToPosition(aboveHeadPosition, 0, function()
+                    task.wait(2)
+                    local targetPosition = closestTitan.Nape.Position
+                    TweenToPosition(targetPosition, 0.5, function()
+                        AttackTitan()
+                        task.wait(0.1)
+                    end)
+                end)
             end
         end
-
-        if closestTitan and closestTitan.Head then
-            local aboveHeadPosition = GetAboveHeadPosition(closestTitan.Head)
-
-            TweenToPosition(aboveHeadPosition, 0, function()
-                task.wait(2)
-                local targetPosition = closestTitan.Nape.Position
-                TweenToPosition(targetPosition, 0.5, function()
-                    AttackTitan()
-                    task.wait(0.1)
-                end)
-            end)
-        end
+        
+        task.wait()
     end
-    
-    task.wait()
-end
+end)
