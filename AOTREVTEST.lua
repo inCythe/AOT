@@ -2,8 +2,6 @@ repeat
     task.wait()
 until game:IsLoaded()
 
-wait(5)
-
 local workspace = game:GetService("Workspace")
 local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
