@@ -165,10 +165,10 @@ while true do
         if closestTitan and closestTitan.Head then
             local aboveHeadPosition = GetAboveHeadPosition(closestTitan.Head)
 
-            TweenToPosition(aboveHeadPosition, 0.5, function()
+            TweenToPosition(aboveHeadPosition, 0, function()
                 task.wait(1)
                 local targetPosition = closestTitan.Nape.Position
-                TweenToPosition(targetPosition, 1, function()
+                TweenToPosition(targetPosition, 0.5, function()
                     AttackTitan()
                     task.wait(0.2)
                 end)
