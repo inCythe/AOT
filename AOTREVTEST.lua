@@ -36,8 +36,8 @@ local function GetTitans()
     for _, titan in pairs(TitanFolder:GetChildren()) do
         local humanoid = titan:FindFirstChildOfClass("Humanoid")
         local head = titan:FindFirstChild("Head")
-        local nape = titan:FindFirstChild("Hitboxes"):FindFirstChild("Hit"):FindFirstChild("Nape")
-        if humanoid and head and head.Position then
+        local nape = titan:FindFirstChild("Hitboxes") and titan.Hitboxes:FindFirstChild("Hit"):FindFirstChild("Nape")
+        if humanoid and head and nape then
             table.insert(titans, {
                 Name = titan.Name,
                 Head = head,
@@ -114,80 +114,39 @@ local function SetUpTouchListener()
     end
 end
 
-local function FindNape(hitFolder)
+local function findNape(hitFolder)
     return hitFolder:FindFirstChild("Nape")
 end
 
-local function ApplyDamageToNape(napeObject)
+local function expandNapeHitbox(hitFolder)
+    local napeObject = findNape(hitFolder)
     if napeObject then
-        local humanoid = napeObject.Parent:FindFirstChildOfClass("Humanoid")
-        if humanoid then
-            humanoid:TakeDamage(DamageAmount)
-        end
-    end
-end
-
-local function ExpandAndHighlightNape(napeObject)
-    if napeObject then
-        napeObject.Size = Vector3.new(100, 100, 100)
-        napeObject.Transparency = 0.8
-        napeObject.Color = HighlightColor
+        napeObject.Size = Vector3.new(105, 120, 100)
+        napeObject.Transparency = 0.96
+        napeObject.Color = Color3.new(1, 1, 1)
         napeObject.Material = Enum.Material.Neon
         napeObject.CanCollide = false
         napeObject.Anchored = false
-
-        local espText = napeObject:FindFirstChild("ESPText")
-        if not espText then
-            espText = Instance.new("TextLabel")
-            espText.Name = "ESPText"
-            espText.Text = "Titan"
-            espText.Size = UDim2.new(1, 0, 1, 0)
-            espText.TextColor3 = HighlightColor
-            espText.Font = Enum.Font.SourceSansBold
-            espText.TextSize = 20
-            espText.BackgroundTransparency = 0.5
-            espText.Parent = napeObject
-        end
     end
 end
 
-local function ExpandAndHighlightNapesInTitans(titansBasePart)
+local function processTitans(titansBasePart)
     for _, titan in ipairs(titansBasePart:GetChildren()) do
         local hitboxesFolder = titan:FindFirstChild("Hitboxes")
         if hitboxesFolder then
             local hitFolder = hitboxesFolder:FindFirstChild("Hit")
             if hitFolder then
-                ExpandAndHighlightNape(FindNape(hitFolder))
+                expandNapeHitbox(hitFolder)
             end
         end
     end
 end
 
-local function RedirectHitToNape(hitPart)
-    if hitPart.Name == "Nape" then
-        ApplyDamageToNape(hitPart)
-    end
-end
-
-local function SetupRedirector()
-    for _, part in ipairs(workspace:GetDescendants()) do
-        if part:IsA("BasePart") then
-            part.Touched:Connect(RedirectHitToNape)
-        end
-    end
-end
-
 SetUpTouchListener()
-SetupRedirector()
 
 while true do
     Anchored()
     Parry()
-
-    local titansBasePart = workspace:FindFirstChild(TitansBasePartName)
-    if titansBasePart then
-        ExpandAndHighlightNapesInTitans(titansBasePart)
-    end
     
     if Farm then
         local titansList = GetTitans()
@@ -196,6 +155,8 @@ while true do
             Farm = false
             return
         end
+
+        processTitans(TitanFolder)
 
         local playerPosition = Player.Character.HumanoidRootPart.Position
         local closestDistance = math.huge
@@ -211,7 +172,6 @@ while true do
         end
 
         if closestTitan and closestTitan.Head then
-            ExpandAndHighlightNape(closestTitan.Nape)
             local aboveHeadPosition = GetAboveHeadPosition(closestTitan.Head)
 
             TweenToPosition(aboveHeadPosition, 0, function()
