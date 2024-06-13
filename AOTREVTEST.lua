@@ -111,7 +111,7 @@ local function TweenToPosition(targetPosition)
 
     local humanoidRootPart = character.HumanoidRootPart
 
-    local duration = 0.1
+    local duration = 1
 
     local tweenInfo = TweenInfo.new(
         duration,
