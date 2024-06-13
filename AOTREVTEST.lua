@@ -2,222 +2,200 @@ repeat
     task.wait()
 until game:IsLoaded()
 
-wait(5)
-
-local workspace = game:GetService("Workspace")
 local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
 local VIM = game:GetService("VirtualInputManager")
 local TweenService = game:GetService("TweenService")
+local TitanFolder = game:GetService("Workspace"):FindFirstChild("Titans")
 
+local closestTitan = nil
 local Farm = true
-local TitanFolder = workspace:FindFirstChild("Titans")
-local tweenInProgress = false
 
-local DamageAmount = 10
-local HighlightColor = Color3.fromRGB(255, 0, 0)
+local workspace = game:GetService("Workspace")
+local players = game:GetService("Players")
 
--- New Nape Extender Functions
-local function FindNape(hitFolder)
+game.Lighting.Atmosphere:Destroy()
+
+local function findNape(hitFolder)
     return hitFolder:FindFirstChild("Nape")
 end
 
-local function ApplyDamageToNape(napeObject)
+local function applyDamageToNape(napeObject)
     if napeObject then
         local humanoid = napeObject.Parent:FindFirstChildOfClass("Humanoid")
         if humanoid then
-            humanoid:TakeDamage(DamageAmount)
+            humanoid:TakeDamage(10)
         end
     end
 end
 
-local function ExpandAndHighlightNape(napeObject)
+local function expandAndHighlightNape(hitFolder)
+    local napeObject = findNape(hitFolder)
     if napeObject then
-        napeObject.Size = Vector3.new(100, 150, 100)
+        napeObject.Size = Vector3.new(100, 300, 100)
         napeObject.Transparency = 0.8
-        napeObject.Color = HighlightColor
+        napeObject.Color = Color3.new(1, 1, 1)
         napeObject.Material = Enum.Material.Neon
         napeObject.CanCollide = false
         napeObject.Anchored = false
 
-        local espText = napeObject:FindFirstChild("ESPText")
-        if not espText then
-            espText = Instance.new("TextLabel")
-            espText.Name = "ESPText"
+        local billboardGui = napeObject:FindFirstChild("BillboardGui")
+        if not billboardGui then
+            billboardGui = Instance.new("BillboardGui")
+            billboardGui.Name = "BillboardGui"
+            billboardGui.AlwaysOnTop = true
+            billboardGui.Size = UDim2.new(2, 0, 2, 0)
+            billboardGui.StudsOffset = Vector3.new(0, 3, 0)
+            billboardGui.MaxDistance = math.huge
+            billboardGui.Adornee = napeObject
+            billboardGui.Parent = napeObject
+
+            local espText = Instance.new("TextLabel")
             espText.Text = "Titan"
             espText.Size = UDim2.new(1, 0, 1, 0)
-            espText.TextColor3 = HighlightColor
+            espText.TextColor3 = Color3.new(255, 0, 0)
             espText.Font = Enum.Font.SourceSansBold
             espText.TextSize = 20
             espText.BackgroundTransparency = 0.5
-            espText.Parent = napeObject
+            espText.Parent = billboardGui
         end
     end
 end
 
-local function ExpandAndHighlightNapesInTitans(titansBasePart)
+local function expandAndHighlightNapesInTitans(titansBasePart)
     for _, titan in ipairs(titansBasePart:GetChildren()) do
         local hitboxesFolder = titan:FindFirstChild("Hitboxes")
         if hitboxesFolder then
             local hitFolder = hitboxesFolder:FindFirstChild("Hit")
             if hitFolder then
-                ExpandAndHighlightNape(FindNape(hitFolder))
+                expandAndHighlightNape(hitFolder)
             end
         end
     end
 end
 
-local function RedirectHitToNape(hitPart)
+local function redirectHitToNape(hitPart)
     local titan = hitPart.Parent
     if titan then
         local hitboxesFolder = titan:FindFirstChild("Hitboxes")
         if hitboxesFolder then
             local hitFolder = hitboxesFolder:FindFirstChild("Hit")
             if hitFolder then
-                ApplyDamageToNape(FindNape(hitFolder))
+                applyDamageToNape(findNape(hitFolder))
             end
         end
     end
 end
 
-local function SetupRedirector()
+local function setupRedirector()
     for _, part in ipairs(workspace:GetDescendants()) do
         if part:IsA("BasePart") then
-            part.Touched:Connect(RedirectHitToNape)
+            part.Touched:Connect(redirectHitToNape)
         end
     end
 end
 
-SetupRedirector()
+setupRedirector()
 
-task.spawn(function()
+coroutine.wrap(function()
     while true do
         local titansBasePart = workspace:FindFirstChild("Titans")
         if titansBasePart then
-            ExpandAndHighlightNapesInTitans(titansBasePart)
+            expandAndHighlightNapesInTitans(titansBasePart)
         end
         wait()
     end
-end)
-
-local function Anchored()
-    if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
-        Player.Character.HumanoidRootPart.Anchored = Farm
-    end
-end
-
-local function Parry()
-    for i, v in pairs(Player.PlayerGui.Interface.Buttons:GetChildren()) do
-        if v ~= nil then
-            VIM:SendKeyEvent(true, string.sub(tostring(v), 1, 1), false, game)
-        end
-    end
-end
+end)()
 
 local function GetTitans()
     local titans = {}
     for _, titan in pairs(TitanFolder:GetChildren()) do
         local humanoid = titan:FindFirstChildOfClass("Humanoid")
         local head = titan:FindFirstChild("Head")
-        local nape = titan:FindFirstChild("Hitboxes") and titan.Hitboxes:FindFirstChild("Hit") and titan.Hitboxes.Hit:FindFirstChild("Nape")
-        if humanoid and head and nape then
+        if humanoid and head and head.Position then
             table.insert(titans, {
                 Name = titan.Name,
                 Head = head,
-                Humanoid = humanoid,
-                Nape = nape
+                Humanoid = humanoid
             })
         end
     end
     return titans
 end
 
-local function TweenToPosition(targetPosition, duration, callback)
-    if tweenInProgress then
-        return
-    end
-
-    tweenInProgress = true
-
+local function TweenToPosition(targetPosition)
     local character = Player.Character
-    if not character or not character:FindFirstChild("HumanoidRootPart") then
-        tweenInProgress = false
-        return
-    end
+    if not character or not character:FindFirstChild("HumanoidRootPart") then return end
 
     local humanoidRootPart = character.HumanoidRootPart
 
+    local duration = 0
+
     local tweenInfo = TweenInfo.new(
-        duration,
+        duration, -- Time to complete the tween
         Enum.EasingStyle.Linear,
         Enum.EasingDirection.Out,
-        0,
-        false,
-        0
+        0, -- Number of times to repeat (0 means no repeat)
+        false, -- Should the tween reverse?
+        0 -- Delay before starting the tween
     )
 
-    local goal = { CFrame = CFrame.new(targetPosition) }
-    
+    local goal = {}
+    goal.CFrame = CFrame.new(targetPosition)
+
     local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
     tween:Play()
-    tween.Completed:Connect(function()
-        tweenInProgress = false
-        if callback then callback() end
-    end)
+    tween.Completed:Wait()
 end
 
 local function AttackTitan()
     VIM:SendMouseButtonEvent(0, 0, 0, true, game, 0)
-    task.wait(0.1)
     VIM:SendMouseButtonEvent(0, 0, 0, false, game, 0)
 end
 
-local function GetAboveHeadPosition(head)
-    local aboveOffset = head.CFrame.LookVector * -15 + Vector3.new(0, 100, 0)
-    local targetPosition = head.Position + aboveOffset
+local function GetTopOfHeadPosition(head)
+    local headHeight = head.Size.Y / 2
+    local targetPosition = head.Position + Vector3.new(0, headHeight + 20, 0)
     return targetPosition
 end
 
-task.spawn(function()
-    while true do
-        Parry()
-        Anchored()
-        
-        if Farm then
-            local titansList = GetTitans()
+local function Parry()
+  for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.Interface.Buttons:GetChildren()) do
+    if v ~= nil then
+      VIM:SendKeyEvent(true,string.sub(tostring(v), 1, 1),false,game)
+    end
+  end
+end
 
-            if #titansList == 0 then
-                Farm = false
-                return
-            end
+while Farm do
+    pcall(function()
+        local titansList = GetTitans()
 
-            local playerPosition = Player.Character.HumanoidRootPart.Position
-            local closestDistance = math.huge
-            local closestTitan = nil
+        if #titansList == 0 then
+            Farm = false
+            return
+        end
 
-            for _, titan in ipairs(titansList) do
-                local headPosition = titan.Head.Position
-                local distance = (headPosition - playerPosition).Magnitude
-                if distance < closestDistance then
-                    closestDistance = distance
-                    closestTitan = titan
-                end
-            end
+        local playerPosition = Player.Character.HumanoidRootPart.Position
+        local closestDistance = math.huge
+            closestTitan = nil
 
-            if closestTitan and closestTitan.Head then
-                local aboveHeadPosition = GetAboveHeadPosition(closestTitan.Head)
-
-                TweenToPosition(aboveHeadPosition, 0.1, function()
-                    task.wait(2)
-                    local targetPosition = closestTitan.Nape.Position
-                    TweenToPosition(targetPosition, 0.5, function()
-                        AttackTitan()
-                        task.wait(0.1)
-                    end)
-                end)
+        for _, titan in ipairs(titansList) do
+            local headPosition = titan.Head.Position
+            local distance = (headPosition - playerPosition).Magnitude
+            if distance < closestDistance then
+                closestDistance = distance
+                closestTitan = titan
             end
         end
-        
+
+        if closestTitan and closestTitan.Head then
+            local targetPosition = GetTopOfHeadPosition(closestTitan.Head)
+            TweenToPosition(targetPosition)
+            AttackTitan()
+            Parry()
+        end
+
         task.wait()
-    end
-end)
+    end)
+end
