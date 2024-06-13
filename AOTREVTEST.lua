@@ -33,13 +33,11 @@ local function GetTitans()
     for _, titan in pairs(TitanFolder:GetChildren()) do
         local humanoid = titan:FindFirstChildOfClass("Humanoid")
         local head = titan:FindFirstChild("Head")
-        local nape = titan:FindFirstChild("Hitboxes") and titan.Hitboxes:FindFirstChild("Hit") and titan.Hitboxes.Hit:FindFirstChild("Nape")
         if humanoid and head and nape then
             table.insert(titans, {
                 Name = titan.Name,
                 Head = head,
                 Humanoid = humanoid,
-                Nape = nape
             })
         end
     end
@@ -86,7 +84,6 @@ end
 
 local function AttackTitan()
     VIM:SendMouseButtonEvent(0, 0, 0, true, game, 0)
-    task.wait(0.1) -- Adjusted wait time between press and release
     VIM:SendMouseButtonEvent(0, 0, 0, false, game, 0)
 end
 
@@ -122,7 +119,6 @@ end
 
 while true do
     Parry()
-    Anchored()
     
     if Farm then
         local titansList = GetTitans()
@@ -153,7 +149,7 @@ while true do
             TweenToPosition(aboveHeadPosition, 0, function()
                 task.wait(1)
                 local targetPosition = closestTitan.Nape.Position
-                TweenToPosition(targetPosition, 1, function()
+                TweenToPosition(targetPosition, 0.7, function()
                     AttackTitan()
                     task.wait(0.2)
                 end)
