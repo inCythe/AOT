@@ -98,9 +98,9 @@ task.spawn(function()
     end
 end)
 
-local function Anchored()
+local function AnchorCharacter(state)
     if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
-        Player.Character.HumanoidRootPart.Anchored = Farm
+        Player.Character.HumanoidRootPart.Anchored = state
     end
 end
 
@@ -204,10 +204,12 @@ task.spawn(function()
             if closestTitan and closestTitan.Head then
                 local aboveHeadPosition = GetAboveHeadPosition(closestTitan.Head)
 
-                TweenToPosition(aboveHeadPosition, 1, function()
+                AnchorCharacter(true)
+                TweenToPosition(aboveHeadPosition, 0.1, function()
                     task.wait(2)
                     local targetPosition = closestTitan.Nape.Position
-                    TweenToPosition(targetPosition, 1, function()
+                    AnchorCharacter(false)
+                    TweenToPosition(targetPosition, 0.1, function()
                         AttackTitan()
                         task.wait(0.1)
                     end)
